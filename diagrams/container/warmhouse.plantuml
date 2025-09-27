@@ -1,0 +1,48 @@
+'Диаграмма контейнеров
+
+@startuml
+
+!include ../templates/C4.puml
+!include ../templates/C4_Context.puml
+!include ../templates/C4_Component.puml
+!include ../templates/C4_Container.puml
+
+Title "Тёплый дом. Диаграмма контейнеров"
+
+System_Boundary(warmhouse, "Умный дом") {
+    Boundary(ui, "Интерфейс пользователя"){
+        Container(mobile_app, "Мобильное приложение", "По возможности;\n желательно иметь версии для всех наиболее популярных мобильных платформ")
+        Container(browser_app, "Браузерное приложение", "Важен охват всех наиболее популярных браузеров; обязательно с режимом просмотра в мобильном браузере")
+    }
+    Container(presentation_service, "Микросервис представлений")
+    Container(registration_service, "Микросервис регистрации")
+    Container(control_service, "Микросервис управления", "Возможно, специализированный")
+    ContainerDb(user_db, "БД учетных данных", "Учетные данные пользователей, помещений и устройств")
+    ContainerDb(data_db, "БД показаний")
+    ContainerQueue(queue, "Очередь сообщений помещений", "Возможно, специализированные очереди на вход/выход")
+}
+Person(user, "Пользователь")
+System_Boundary(house, "Помещение") {
+    System_Ext(device, "Датчик")
+}
+
+' Связь с пользователем
+Rel(user, ui, "регистрируется, подключает устройства, управляет устройствами")
+Rel(ui, presentation_service, "получает представления сведений и данных")
+Rel(ui, registration_service, "регистрируется и регистрирует устройства")
+Rel(ui, control_service, "устанавливает целевые значения")
+
+' Связь с устройствами
+BiRel_L(device, queue, "записывает показания и считывает команды")
+BiRel_D(control_service, queue, "считывает показания и записывает команды")
+
+' Связь с БД
+Rel(control_service, data_db, "записывает показания")
+Rel(registration_service, user_db, "записывает учетные данные")
+Rel(presentation_service, user_db, "считывает учетные данные")
+Rel(presentation_service, data_db, "считывает показания")
+
+'При регистрации необходимо немедленно протестировать устройство?
+BiRel(registration_service, control_service, "проверяет подключение устройства, получает учетные данные")
+
+@enduml
