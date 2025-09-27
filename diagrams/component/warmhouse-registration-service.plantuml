@@ -1,0 +1,36 @@
+'Диаграмма компонентов. Микросервис регистрации
+
+@startuml
+
+!include ../templates/C4.puml
+!include ../templates/C4_Context.puml
+!include ../templates/C4_Component.puml
+!include ../templates/C4_Container.puml
+
+Title "Тёплый дом. Микросервис регистрации. Диаграмма компонентов"
+Container_Boundary(registration_service, "Микросервис регистрации"){
+    Component(controllers, "Контроллеры запросов")
+    Component(device_registration, "Процедуры регистрации устройств")
+    Component(user_registration, "Процедуры регистрации пользователя и помещений")
+    Component(repo, "Компонент связи с БД")
+    }
+Container_Ext(ui, "Интерфейс пользователя")
+Container_Ext(control_service, "Микросервис управления")
+ContainerDb_Ext(user_db, "БД учетных данных", "Учетные данные пользователей, помещений и устройств")
+
+' Связь с пользователем
+Rel_D(ui, controllers, "регистрируется и регистрирует устройства")
+
+' Связь с БД
+Rel(repo, user_db, "записывает учетные данные")
+
+'При регистрации необходимо немедленно протестировать устройство?
+BiRel(device_registration, control_service, "проверяет подключение устройства, получает учетные данные")
+
+'Внутренние связи
+Rel(controllers, user_registration, "использует")
+Rel(controllers, device_registration, "использует")
+Rel(user_registration, repo, "использует")
+Rel(device_registration, repo, "использует")
+
+@enduml

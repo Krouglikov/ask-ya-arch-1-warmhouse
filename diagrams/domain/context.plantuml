@@ -1,0 +1,32 @@
+'Контекстная карта управления умным домом
+
+@startuml
+
+!include ../templates/C4.puml
+!include ../templates/C4_Context.puml
+!include ../templates/C4_Component.puml
+!include ../templates/C4_Container.puml
+
+Title "Контекстная карта управления умным домом"
+
+Enterprise_Boundary(domain, "Домен: управление умным домом"){
+    System_Boundary(registration, "Поддомен: регистрация пользователей и устройств"){
+        System(user_registration, "Контекст: регистрация/перерегистрация пользователей")
+        System(device_registration, "Контекст: регистрация/перерегистрация устройств")
+    }
+    System_Boundary(presentation, "Поддомен: представление данных"){
+        System(user_presentation, "Контекст: представление данных пользователя")
+        System(device_presentation, "Контекст: представление данных устройств")
+    }
+    System_Boundary(control, "Поддомен: управление устройствами"){
+        System(input, "Контекст: сбор показаний")
+        System(output, "Контекст: управляющие воздействия")
+    }
+}
+
+Rel(user_registration, device_registration, "Предшествует")
+Rel(user_registration, user_presentation, "Формирует данные")
+Rel(input, device_presentation, "Формирует данные")
+Rel(input, output, "Определяет необходимость формирования")
+
+@enduml

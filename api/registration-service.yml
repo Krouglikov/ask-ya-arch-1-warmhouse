@@ -1,0 +1,243 @@
+openapi: 3.0.0
+info:
+  title: Smart Home Registration API
+  description: API регистрации пользователей и устройств в системе "Умный дом"
+  version: 1.0.0
+
+servers:
+  - url: https://api.smart-home.com/v1
+    description: Production server
+
+paths:
+  /users:
+    post:
+      summary: Регистрация пользователя
+      description: Создает новую учетную запись пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegistrationRequest'
+      responses:
+        '201':
+          description: Пользователь успешно зарегистрирован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRegistrationResponse'
+        '400':
+          description: Неверные параметры
+        '500':
+          description: Пользователь уже существует
+
+  /housings:
+    summary: Регистрация помещения
+    description: Создает новую запись о помещении
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/HousingRegistrationRequest'
+    responses:
+      '201':
+        description: Помещение успешно зарегистрировано
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HousingRegistrationResponse'
+      '400':
+        description: Неверные параметры
+      '500':
+        description: Помещение уже существует
+
+  /devices:
+    post:
+      summary: Регистрация устройства
+      description: Регистрирует новое устройство в системе
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceRegistrationRequest'
+      responses:
+        '201':
+          description: Устройство успешно зарегистрировано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceRegistrationResponse'
+        '400':
+          description: Неверные параметры
+        '500':
+          description: Ошибка подключения устройства
+
+components:
+  schemas:
+    UserRegistrationRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: ФИО
+        formalId:
+          type: string
+          description: Паспортные данные
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+          pattern: ^\+7\d{10}$
+
+    UserRegistrationResponse:
+      type: object
+      properties:
+        userId:
+          type: string
+          description: Уникальный идентификатор пользователя
+
+    HousingRegistrationRequest:
+      type: object
+      required:
+        - userId
+        - address
+      properties:
+        userId:
+          type: string
+          description: Идентификатор пользователя
+        address:
+          type: string
+          description: Адрес помещения
+
+    HousingRegistrationResponse:
+      type: object
+      properties:
+        housingId:
+          type: string
+          description: Уникальный идентификатор пользователя
+
+    DeviceRegistrationRequest:
+      type: object
+      required:
+        - userId
+        - housingId
+        - deviceType
+        - deviceName
+        - protocol
+      properties:
+        userId:
+          type: string
+          description: ID пользователя, которому принадлежит устройство
+        housingId:
+          type: string
+          description: ID помещения, в котором размещено устройство
+        deviceName:
+          type: string
+          description: Наименование устройства
+        deviceType:
+          type: string
+          enum: [input, output, bi-di]
+        protocol:
+          type: string
+          description: Протокол взаимодействия
+
+    DeviceRegistrationResponse:
+      type: object
+      properties:
+        deviceId:
+          type: string
+          description: Уникальный идентификатор устройства
+
+examples:
+  # Пример регистрации пользователя
+  user_registration:
+    summary: Пример запроса на регистрацию пользователя
+    request:
+      method: POST
+      url: https://api.smart-home.com/v1/users
+      body:
+        name: Иванов Иван Иванович
+        formalId: 4523 123456
+        email: ivan@example.com
+        phone: +79123456789
+    response:
+      status: 201
+      body:
+        userId: user-12345
+
+  # Пример регистрации помещения
+  housing_registration:
+    summary: Пример запроса на регистрацию помещения
+    request:
+      method: POST
+      url: https://api.smart-home.com/v1/housings
+      body:
+        userId: user-12345
+        address: г. Москва, ул. Пушкина, д. 1, кв. 10
+    response:
+      status: 201
+      body:
+        housingId: housing-67890
+
+  # Пример регистрации устройства
+  device_registration:
+    summary: Пример запроса на регистрацию устройства
+    request:
+      method: POST
+      url: https://api.smart-home.com/v1/devices
+      body:
+        userId: user-12345
+        housingId: housing-67890
+        deviceName: Умная лампочка
+        deviceType: output
+        protocol: Zigbee
+    response:
+      status: 201
+      body:
+        deviceId: device-112233
+
+  # Пример ошибки при регистрации пользователя
+  user_registration_error:
+    summary: Пример ошибки при регистрации пользователя (неверные параметры)
+    request:
+      method: POST
+      url: https://api.smart-home.com/v1/users
+      body:
+        name: Иван
+        email: invalid-email
+    response:
+      status: 400
+      body:
+        error: Неверные параметры
+
+  # Пример ошибки при регистрации помещения
+  housing_registration_error:
+    summary: Пример ошибки при регистрации помещения (неверные параметры)
+    request:
+      method: POST
+      url: https://api.smart-home.com/v1/housings
+      body:
+        userId: user-12345
+    response:
+      status: 400
+      body:
+        error: Неверные параметры
+
+  # Пример ошибки при регистрации устройства
+  device_registration_error:
+    summary: Пример ошибки при регистрации устройства (неверные параметры)
+    request:
+      method: POST
+      url: https://api.smart-home.com/v1/devices
+      body:
+        userId: user-12345
+        deviceName: Умная лампочка
+    response:
+      status: 400
+      body:
+        error: Неверные параметры

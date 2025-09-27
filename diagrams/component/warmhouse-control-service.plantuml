@@ -1,0 +1,43 @@
+'Диаграмма компонентов. Микросервис управления
+
+@startuml
+
+!include ../templates/C4.puml
+!include ../templates/C4_Context.puml
+!include ../templates/C4_Component.puml
+!include ../templates/C4_Container.puml
+
+Title "Тёплый дом. Микросервис управления Диаграмма компонентов"
+
+Container_Ext(ui, "Интерфейс пользователя")
+Container_Ext(registration_service, "Микросервис регистрации")
+Container_Boundary(control_service, "Микросервис управления") {
+    Component(controllers, "Контроллеры запросов")
+    Component(core, "Компонент выработки управления")
+    Component(input, "Компонент приёма данных")
+    Component(repo, "Компоненты связи с БД")
+    }
+ContainerDb_Ext(data_db, "БД показаний")
+ContainerQueue_Ext(queue, "Очередь сообщений помещений", "Возможно, специализированные очереди на вход/выход")
+
+
+' Связь с пользователем
+Rel_D(ui, controllers, "устанавливает целевые значения")
+
+' Связь с устройствами
+Rel_R(input, queue, "считывает показания")
+BiRel_R(core, queue, "записывает команды, считывает ответы")
+
+' Связь с БД
+Rel_D(repo, data_db, "записывает показания/целевые значения")
+
+'При регистрации необходимо немедленно протестировать устройство?
+BiRel_U(registration_service, core, "проверяет подключение устройства, получает учетные данные")
+
+' Внутренние связи
+Rel(controllers, repo, "устанавливает целевые значения")
+Rel(input, repo, "Сохраняет показания")
+Rel(input, core, "Оповещает о показаниях")
+
+
+@enduml

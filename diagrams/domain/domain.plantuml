@@ -1,0 +1,27 @@
+'Диаграмма контекстов управления умным домом
+
+@startuml
+
+!include ../templates/C4.puml
+!include ../templates/C4_Context.puml
+!include ../templates/C4_Component.puml
+!include ../templates/C4_Container.puml
+
+Title "Диаграмма контекстов управления умным домом"
+
+Enterprise_Boundary(domain, "Домен: управление умным домом"){
+    System_Boundary(registration, "Поддомен: регистрация пользователей и устройств"){
+        System(user_registration, "Контекст: регистрация/перерегистрация пользователей")
+        System(device_registration, "Контекст: регистрация/перерегистрация устройств")
+    }
+    System_Boundary(presentation, "Поддомен: представление данных"){
+        System(user_presentation, "Контекст: представление данных пользователя")
+        System(device_presentation, "Контекст: представление данных устройств")
+    }
+    System_Boundary(control, "Поддомен: управление устройствами"){
+        System(input, "Контекст: сбор показаний")
+        System(output, "Контекст: управляющие воздействия")
+    }
+}
+
+@enduml
