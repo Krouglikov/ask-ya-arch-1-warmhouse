@@ -1,0 +1,26 @@
+'Контекстная диаграмма AS-TO-BE
+
+@startuml
+
+!include ../templates/C4.puml
+!include ../templates/C4_Context.puml
+!include ../templates/C4_Component.puml
+!include ../templates/C4_Container.puml
+
+Title "Тёплый дом. Контекстная диаграмма AS-TO-BE"
+
+System_Boundary(bounds, "Компания 'Тёплый дом'") {
+    System(warmhouse, "Умный дом", "Информационная система")
+}
+Boundary(house, "Помещение") {
+    System_Ext(heating, "Система отопления", "Позволяет дистанционный доступ к датчикам и регуляторам", $sprite=robot)
+    System_Ext(lighting, "Система освещения", "Позволяет дистанционный доступ к датчикам и регуляторам", $sprite=robot)
+    System_Ext(other, "Прочие системы", "Позволяет дистанционный доступ к датчикам и регуляторам", $sprite=robot)
+}
+Person(user, "Пользователь", "Владелец помещения")
+Rel(user, warmhouse, "Регистрируется, подключает устройства, управляет системами помещения")
+BiRel(warmhouse, heating, "взаимодействует")
+BiRel(warmhouse, lighting, "взаимодействует")
+BiRel(warmhouse, other, "взаимодействует")
+
+@enduml

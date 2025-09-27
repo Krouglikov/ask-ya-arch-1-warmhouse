@@ -1,0 +1,164 @@
+asyncapi: '3.0.0'
+
+info:
+  title: Smart Home Event Bus
+  description: Асинхронный API для взаимодействия c датчиками и регуляторами умного дома
+  version: '1.0.0'
+
+servers:
+  production:
+    url: amqp://broker.warmhouse.ru:5672
+    protocol: amqp
+    description: Основной брокер сообщений для умного дома
+
+channels:
+  # Канал для отправки данных с датчиков
+  sensor-data:
+    publish:
+      message:
+        contentType: application/json
+        payload:
+          $ref: '#/components/schemas/SensorData'
+    description: Канал для передачи данных с датчиков
+
+  # Канал для команд управления устройствами
+  device-commands:
+    publish:
+      message:
+        contentType: application/json
+        payload:
+          $ref: '#/components/schemas/DeviceCommand'
+    description: Канал для отправки команд устройствам
+
+  # Канал для статусов устройств
+  device-status:
+    publish:
+      message:
+        contentType: application/json
+        payload:
+          $ref: '#/components/schemas/DeviceStatus'
+    description: Канал для обновления статусов устройств
+
+components:
+  schemas:
+    SensorData:
+      type: object
+      required:
+        - sensorId
+        - timestamp
+      properties:
+        sensorId:
+          type: string
+          description: Уникальный идентификатор устройства
+        timestamp:
+          type: string
+          format: date-time
+          description: Дата и время сбора показаний
+        data:
+          type: string
+          description: Показания (зависят от типа устройства)
+
+    DeviceCommand:
+      type: object
+      required:
+        - deviceId
+        - command
+      properties:
+        deviceId:
+          type: string
+          description: Уникальный идентификатор устройства
+        command:
+          type: string
+          description: Команда (зависит от типа устройства)
+        parameters:
+          type: string
+          description: Параметры команды (зависят от типа устройства)
+
+    DeviceStatus:
+      type: object
+      required:
+        - deviceId
+        - status
+      properties:
+        deviceId:
+          type: string
+          description: Уникальный идентификатор устройства
+        status:
+          type: string
+          description: Состояние устройства (зависит от типа устройства)
+        lastUpdated:
+          type: string
+          format: date-time
+          description: Дата и время последнего обновления
+        details:
+          type: object
+          properties:
+            name:
+              type: string
+              description: Наименование устройства
+            serialNumber:
+              type: string
+              description: Серийный номер устройства
+            protocol:
+              type: string
+              description: Протокол взаимодействия
+
+examples:
+  # Примеры для SensorData
+  temperature-sensor-example:
+    $ref: '#/components/schemas/SensorData'
+    summary: Пример данных с температурного датчика
+    value:
+      sensorId: "temp_sensor_001"
+      timestamp: "2025-09-22T18:57:01Z"
+      data: "22.5"
+
+  humidity-sensor-example:
+    $ref: '#/components/schemas/SensorData'
+    summary: Пример данных с датчика влажности
+    value:
+      sensorId: "humidity_sensor_002"
+      timestamp: "2025-09-22T18:57:01Z"
+      data: "45.3"
+
+  # Примеры для DeviceCommand
+  turn-on-light-example:
+    $ref: '#/components/schemas/DeviceCommand'
+    summary: Пример команды включения света
+    value:
+      deviceId: "light_001"
+      command: "turn_on"
+      parameters: "brightness:100"
+
+  adjust-temperature-example:
+    $ref: '#/components/schemas/DeviceCommand'
+    summary: Пример команды регулировки температуры
+    value:
+      deviceId: "heater_001"
+      command: "set_temperature"
+      parameters: "22"
+
+  # Примеры для DeviceStatus
+  active-device-example:
+    $ref: '#/components/schemas/DeviceStatus'
+    summary: Пример статуса активного устройства
+    value:
+      deviceId: "light_001"
+      status: "active"
+      lastUpdated: "2025-09-22T18:57:01Z"
+      details:
+        name: "Гостиная свет"
+        serialNumber: "SN123456789"
+        protocol: "Zigbee"
+
+  offline-device-example:
+    $ref: '#/components/schemas/DeviceStatus'
+    summary: Пример статуса оффлайн устройства
+    value:
+      deviceId: "temperature_sensor_001"
+      status: "offline"
+      lastUpdated: "2025-09-22T18:57:01Z"
+      details:
+        name: "Датчик температуры кухня"
+        serialNumber: "SN987654321"
+        protocol: "Z-Wave"

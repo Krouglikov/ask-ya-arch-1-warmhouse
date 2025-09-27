@@ -1,0 +1,113 @@
+{
+	"info": {
+		"_postman_id": "f0984a60-0d8a-4803-89ca-e2c984df2df5",
+		"name": "Microservice testing",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "48720669",
+		"_collection_link": "https://perekatipole-3889305.postman.co/workspace/%D0%90%D0%BB%D0%B5%D0%BA%D1%81%D0%B5%D0%B9-%D0%9A%D1%80%D1%83%D0%B3%D0%BB%D0%B8%D0%BA%D0%BE%D0%B2's-Workspace~0d7fa5d1-1e59-4352-8504-5556721e54b7/collection/48720669-f0984a60-0d8a-4803-89ca-e2c984df2df5?action=share&source=collection_link&creator=48720669"
+	},
+	"item": [
+		{
+			"name": "temperature-api: get sensor A",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/temperature?location=a",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"temperature"
+					],
+					"query": [
+						{
+							"key": "location",
+							"value": "a"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "registration: add user",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Alex\",\r\n    \"formalId\": null,\r\n    \"email\": \"some.email@some.server\",\r\n    \"phone\": \"+79876543210\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8082/users",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "registration: add device",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\": \"XXX-something-XXX\",\r\n    \"housingId\": \"XXX-something-XXX\",\r\n    \"deviceName\": \"Fantastic Sensor 2100\",\r\n    \"deviceType\": \"INPUT\",\r\n    \"protocol\": \"some protocol\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8082/devices",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"devices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "control: get sensor A",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8083/api/temperature/a",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"api",
+						"temperature",
+						"a"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

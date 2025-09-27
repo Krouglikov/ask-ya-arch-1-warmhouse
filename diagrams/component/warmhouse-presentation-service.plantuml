@@ -1,0 +1,35 @@
+'Диаграмма компонентов (микросервис представлений)
+
+@startuml
+
+!include ../templates/C4.puml
+!include ../templates/C4_Context.puml
+!include ../templates/C4_Component.puml
+!include ../templates/C4_Container.puml
+
+Title "Тёплый дом. Микросервис представлений. Диаграмма компонентов"
+
+Container_Boundary(presentation_service, "Микросервис представлений") {
+    Component(converters, "Компоненты формирования представлений")
+    Component(controllers, "Контроллеры запросов")
+    Component(event_service, "Служба выявления событий", "Необязательно")
+    Component(repo, "Компонент связи с БД")
+    }
+Container_Ext(ui, "Интерфейс пользователя")
+ContainerDb_Ext(user_db, "БД учетных данных", "Учетные данные пользователей, помещений и устройств")
+ContainerDb_Ext(data_db, "БД показаний")
+
+' Связь с пользователем
+Rel(ui, controllers, "получает представления сведений и данных")
+Rel(event_service, ui, "направляет уведомления")
+
+' Связь с БД
+Rel(repo, user_db, "считывает учетные данные")
+Rel(repo, data_db, "считывает показания")
+
+'Внутренние связи
+Rel(event_service, repo, "использует")
+Rel(controllers, converters, "использует")
+Rel(controllers, repo, "использует")
+
+@enduml
